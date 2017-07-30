@@ -112,10 +112,17 @@ end
   end
 end
 
-function addVisited!(visitedStates, elevatorPosition, state)
+# function addVisited!(visitedStates, elevatorPosition, state)
+#   for c in subsets([1,3,5,7,9], 2)
+#       push!(visitedStates, hash((elevatorPosition, swapPairs(state, [c[1], c[1]+1], [c[2], c[2]+1]))))
+#   end
+# end
+
+function alreadyVisited(visitedStates, elevatorPosition, state)
   for c in subsets([1,3,5,7,9], 2)
-      push!(visitedStates, hash((elevatorPosition, swapPairs(state, [c[1], c[1]+1], [c[2], c[2]+1]))))
+      in(hash((elevatorPosition, swapPairs(state, [c[1], c[1]+1], [c[2], c[2]+1]))), visitedStates) && return true
   end
+  return false
 end
 
 function solve()
@@ -143,9 +150,12 @@ function solve()
         if sum(materialPositions[elevatorPosition, c] ) > 0 # at least one part must be moved
           for ap in adjacentFloors(elevatorPosition)
             candidate = moveElevator(materialPositions, elevatorPosition, ap, c)
-            !in(hash((ap, candidate)), visitedStates) && isSafe(candidate) && (push!(nextLevelCandidates, (ap, candidate)); addVisited!(visitedStates, ap, candidate))
-            sum(candidate[1, :]) == 10 && (println("Solution Found!"); solution = true)
-            sum(candidate[1, :]) > maxSoFar && (maxSoFar = sum(candidate[1, :]); println("up at highest floor: $(sum(candidate[1, :]))"))
+            if !alreadyVisited(visitedStates, ap, candidate) && isSafe(candidate)
+              push!(nextLevelCandidates, (ap, candidate))
+              push!(visitedStates, hash((ap, candidate)))
+              sum(candidate[1, :]) == 10 && (println("Solution Found!"); solution = true)
+              sum(candidate[1, :]) > maxSoFar && (maxSoFar = sum(candidate[1, :]); println("up at highest floor: $(sum(candidate[1, :]))"))
+            end
           end
         end
       end
