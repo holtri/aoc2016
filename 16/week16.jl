@@ -29,4 +29,4 @@ end
 
 @time solve(bitinput, fileLength)
 
-println(reduce(*, string.(convert.(Int8, solve(bitinput, fileLength)))))
+@time println(reduce(*, string.(convert.(Int8, solve(bitinput, fileLength)))))

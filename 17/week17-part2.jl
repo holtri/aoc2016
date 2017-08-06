@@ -1,6 +1,6 @@
 using Nettle
 
-input = "ihgpwlah"
+input = "pgflpeqp"
 currentfront = Set{Tuple{Int,Int,String}}()
 push!(currentfront, (1,1,input))
 
