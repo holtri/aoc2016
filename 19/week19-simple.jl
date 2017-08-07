@@ -32,7 +32,6 @@ function solve2(input)
   elves[1]
 end
 
-
 # random deletion is too slow...
 function poptest(x)
   tmp = ones(Int, x)
@@ -61,28 +60,55 @@ end
 
 solve2(input)
 
-function solve2fast(input::Int)
-  split = convert(Int, floor(input/2))
-  elvesgain = [(x,1) for x in 1:split]
-  elvesgive = [(x,1) for x in split+1:input]
-  next = Vector{Tuple{Int,Int}}()
+type Node
+  id::Int
+  next::Node
+  prev::Node
 
-  while !(length(elvesgain) == 0 && length(elvesgive) == 1)
-
-    length(elvesgive) > length(elvesgain) && push!(next, pop!(elvesgive))
-
-    numelements = length(elvesgain)
-    for i in 1:numelements
-      tmp = shift!(elvesgain)
-      push!(next, (tmp[1], tmp[2] + shift!(elvesgive)[2]) )
-    end
-
-    split = convert(Int, floor(length(next)/2))
-    elvesgain = next[1:split]
-    elvesgive = next[split+1:end]
-    next = Vector{Tuple{Int,Int}}()
+  function Node(id::Int)
+    node = new(id)
+    node.next = node
+    node.prev = node
   end
-  elvesgive
+  Node(id::Int, next::Node, prev::Node) = new(id,next,prev)
 end
 
-solve2fast(3001330)[1]
+function deleteNode!(x::Node)
+  x.prev.next = x.next
+  x.next.prev = x.prev
+end
+
+function setupNodes(n)
+  head = Node(1)
+  current = head
+  midpoint = Node(0)
+  midid = iseven(n) ? convert(Int, n/2) + 1 : convert(Int, ceil(n/2))
+  for i in 2:n
+    nextNode = Node(i)
+    current.next = nextNode
+    nextNode.prev = current
+    current = nextNode
+    i == midid && ( midpoint = current)
+  end
+  current.next = head
+  head.prev = current
+  midpoint
+end
+
+function solve2fast(n)
+  midpoint = setupNodes(n)
+  while midpoint.next != midpoint
+    deleteNode!(midpoint)
+    n -= 1
+    if n % 2 == 0
+      tmp = midpoint.next.next
+    else
+      tmp = midpoint.next
+    end
+    midpoint = tmp
+    # n % 1000 == 0 && println(n)
+  end
+  midpoint.id
+end
+
+@time solve2fast(3001330)
