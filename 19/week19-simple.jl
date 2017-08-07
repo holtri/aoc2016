@@ -33,4 +33,67 @@ function solve2(input)
   elves[1]
 end
 
+
+# random deletion is too slow...
+function poptest(x)
+  tmp = ones(Int, x)
+  for i in 1:x
+    pop!(tmp)
+  end
+
+
+  function shifttest(x)
+    tmp = ones(Int, x)
+    for i in 1:x
+      shift!(tmp)
+    end
+  end
+
+function deletetest(x)
+  tmp = ones(Int, x)
+  for i in 1:x
+    deleteat!(tmp,rand(1:length(tmp)))
+  end
+end
+
+@time poptest(10^8)
+@time shifttest(10^8)
+@time poptest(10^5)
+@time deletetest(10^5)
+
 solve2(input)
+
+function solve2fast(input::Int)
+  split = convert(Int, floor(input/2))
+  elvesgain = [(x,1) for x in 1:split]
+  elvesgive = [(x,1) for x in split+1:input]
+
+split = isodd(length(elvesgain))? length(elvesgain)/2:  length(elvesgain)/2 +1
+  while length(elvesgive) != 0
+    println(split)
+    nextgain = Vector{Tuple{Int,Int}}()
+    nextgive = Vector{Tuple{Int,Int}}()
+
+    # split = convert(Int, floor(length(elvesgive)/2))
+    if length(elvesgive) > length(elvesgain)
+      push!(nextgain, pop!(elvesgive))
+    end
+
+    numelements = length(elvesgain)
+    for i in 1:numelements
+      tmp = shift!(elvesgain)
+      if i < split
+        push!(nextgain, (tmp[1], tmp[2] + shift!(elvesgive)[2]) )
+      else
+        push!(nextgive, (tmp[1], tmp[2] + shift!(elvesgive)[2]) )
+      end
+    end
+    elvesgain = nextgain
+    elvesgive = nextgive
+    split = isodd(length(elvesgain))? length(elvesgain)/2:  length(elvesgain)/2 +1
+    println("nextgain: $nextgain")
+  end
+  elvesgain
+end
+
+solve2fast(4)[1]
