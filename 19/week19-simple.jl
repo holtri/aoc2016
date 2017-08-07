@@ -12,7 +12,6 @@ end
 
 solve(input)
 
-
 function opposite(x::Int, len)
   tmp = (x + convert(Int, floor(len/2))) % (len)
   tmp > 0 ? tmp : len
@@ -41,7 +40,6 @@ function poptest(x)
     pop!(tmp)
   end
 
-
   function shifttest(x)
     tmp = ones(Int, x)
     for i in 1:x
@@ -67,33 +65,24 @@ function solve2fast(input::Int)
   split = convert(Int, floor(input/2))
   elvesgain = [(x,1) for x in 1:split]
   elvesgive = [(x,1) for x in split+1:input]
+  next = Vector{Tuple{Int,Int}}()
 
-split = isodd(length(elvesgain))? length(elvesgain)/2:  length(elvesgain)/2 +1
-  while length(elvesgive) != 0
-    println(split)
-    nextgain = Vector{Tuple{Int,Int}}()
-    nextgive = Vector{Tuple{Int,Int}}()
+  while !(length(elvesgain) == 0 && length(elvesgive) == 1)
 
-    # split = convert(Int, floor(length(elvesgive)/2))
-    if length(elvesgive) > length(elvesgain)
-      push!(nextgain, pop!(elvesgive))
-    end
+    length(elvesgive) > length(elvesgain) && push!(next, pop!(elvesgive))
 
     numelements = length(elvesgain)
     for i in 1:numelements
       tmp = shift!(elvesgain)
-      if i < split
-        push!(nextgain, (tmp[1], tmp[2] + shift!(elvesgive)[2]) )
-      else
-        push!(nextgive, (tmp[1], tmp[2] + shift!(elvesgive)[2]) )
-      end
+      push!(next, (tmp[1], tmp[2] + shift!(elvesgive)[2]) )
     end
-    elvesgain = nextgain
-    elvesgive = nextgive
-    split = isodd(length(elvesgain))? length(elvesgain)/2:  length(elvesgain)/2 +1
-    println("nextgain: $nextgain")
+
+    split = convert(Int, floor(length(next)/2))
+    elvesgain = next[1:split]
+    elvesgive = next[split+1:end]
+    next = Vector{Tuple{Int,Int}}()
   end
-  elvesgain
+  elvesgive
 end
 
-solve2fast(4)[1]
+solve2fast(3001330)[1]
