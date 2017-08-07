@@ -58,8 +58,6 @@ end
 @time poptest(10^5)
 @time deletetest(10^5)
 
-solve2(input)
-
 type Node
   id::Int
   next::Node
