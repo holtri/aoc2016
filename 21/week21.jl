@@ -2,7 +2,7 @@ using Combinatorics
 
 input = readlines(open(joinpath(@__DIR__, "input.txt")))
 
-function scramble(pw, command)
+function scramble!(pw, command)
   if command[1] == "swap"
     if command[2] == "letter"
       i = find(x -> x == command[3], pw)[1]
@@ -18,13 +18,12 @@ function scramble(pw, command)
     if command[2] == "left" || command[2] == "right"
       steps = parse(Int, command[3])
       command[2] == "left" && (steps = -steps)
-      pw = circshift(pw, steps)
     else
       steps = find(x -> x == command[7], pw)[1] - 1 # 0 index
       steps = steps >= 4 ? steps + 1 : steps
       steps = steps + 1
-      pw = circshift(pw, steps)
     end
+    circshift!(pw, copy(pw), steps)
   elseif command[1] == "reverse"
     from = parse(Int, command[3]) +1
     to = parse(Int, command[5]) +1
@@ -36,12 +35,11 @@ function scramble(pw, command)
     deleteat!(pw, del)
     insert!(pw, ins, tmp)
   end
-  pw
 end
 
 function solve(pw, input)
   for i in 1:length(input)
-    pw = scramble(pw, split(input[i], " "))
+    scramble!(pw, split(input[i], " "))
   end
   join(pw)
 end
