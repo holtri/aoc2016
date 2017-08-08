@@ -17,7 +17,7 @@ function solve()
   value = 1
   intervals = sort(input, lt = (x,y)-> x[1] < y[1])
   while value < 4294967295
-    !inAnyInterval(value, input) && break
+    !inAnyInterval(value, intervals) && break
     value+=1
   end
   value
