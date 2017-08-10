@@ -1,3 +1,4 @@
+using Base.Test
 input = readlines(open(joinpath(@__DIR__, "input.txt")))
 
 struct Server
@@ -27,6 +28,7 @@ count
 
 # Some fun with indexing
 
+# 'L1' neighbors: only one index ⨦ 1 
 function isneighbor(I1::CartesianIndex, I2::CartesianIndex)
  length(I1) == length(I2) || throw(BoundsError())
  I1 == I2 && return false # only true neighbor
@@ -45,8 +47,10 @@ idxstart, idxend = first(R), last(R)
 count = 0
 for idx in R
  grid[idx].used == 0 && continue
- neighboridx = [c for c in CartesianRange(max(idxstart, idx - idxstart), min(idxend, idxend + idxstart)) if isneighbor(idx, c)]
+ neighboridx = [c for c in CartesianRange(max(idxstart, idx - idxstart), min(idxend, idx + idxstart)) if isneighbor(idx, c)]
  for subR in neighboridx
    grid[subR].avail >= grid[idx].used && (count += 1)
  end
 end
+
+##
